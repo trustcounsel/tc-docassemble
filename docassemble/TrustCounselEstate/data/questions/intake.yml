@@ -1,0 +1,12 @@
+---
+metadata:
+  title: TrustCounsel Estate Intake
+---
+mandatory: True
+question: TrustCounsel Estate Intake
+subquestion: |
+  Docassemble is now working on your DigitalOcean server.
+
+  This is a placeholder interview screen for live testing.
+buttons:
+  - Exit: exit
