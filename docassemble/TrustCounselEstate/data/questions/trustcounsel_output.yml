@@ -1,0 +1,75 @@
+---
+# ============================================================
+# TRUSTCOUNSEL PC — Document Output Block
+# Add this file to your Docassemble package alongside
+# trustcounsel_intake.yml
+# Upload trust_template.docx to your Docassemble
+# /data/templates/ folder
+# ============================================================
+
+---
+# Triggered after review_complete is set
+question: Your Documents Are Ready
+subquestion: |
+  The following documents have been assembled based on your
+  intake information. Please download and review carefully
+  before your signing appointment.
+
+  > **Note:** These are drafts for attorney review only.
+  > Do not sign until reviewed and approved by David Talley.
+attachment code: estate_plan_docs
+
+---
+code: |
+  estate_plan_docs = [
+    trust_doc,
+    dat_will_doc,
+    kft_will_doc,
+  ]
+
+---
+# ---- LIVING TRUST ----
+attachment:
+  name: ${ trust_name }
+  filename: ${ trust_family_name }_Living_Trust
+  docx template file: trust_template.docx
+  variable name: trust_doc
+  valid formats:
+    - docx
+    - pdf
+
+---
+# ---- WILL: TRUSTOR 1 (DAT) ----
+attachment:
+  name: Last Will and Testament of ${ trustor1_full_name }
+  filename: ${ trustor1_last }_Will_${ trustor1_first }
+  docx template file: will_template_trustor1.docx
+  variable name: dat_will_doc
+  valid formats:
+    - docx
+    - pdf
+
+---
+# ---- WILL: TRUSTOR 2 (KFT) ----
+# Only included for married couple plans
+if: plan_type == 'married_couple'
+attachment:
+  name: Last Will and Testament of ${ trustor2_full_name }
+  filename: ${ trustor2_last }_Will_${ trustor2_first }
+  docx template file: will_template_trustor2.docx
+  variable name: kft_will_doc
+  valid formats:
+    - docx
+    - pdf
+
+---
+# ---- MARITAL PROPERTY AGREEMENT ----
+if: plan_type == 'married_couple' and include_mpa
+attachment:
+  name: Marital Property Agreement — ${ trust_family_name }
+  filename: ${ trust_family_name }_Marital_Property_Agreement
+  docx template file: mpa_template.docx
+  variable name: mpa_doc
+  valid formats:
+    - docx
+    - pdf
