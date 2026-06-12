@@ -1,0 +1,425 @@
+---
+# ============================================================
+# TRUSTCOUNSEL PC — Estate Plan Intake Interview
+# Covers: Living Trust + Pour-Over Wills + Marital Property Agreement
+# Author: TrustCounsel PC / David Talley
+# Version: 0.1 (testing baseline)
+# ============================================================
+
+metadata:
+  title: TrustCounsel Estate Plan Intake
+  short title: Estate Plan Intake
+  description: Intake questionnaire for a trust-based estate plan (married couple, California)
+  authors:
+    - name: David Talley
+      organization: TrustCounsel PC
+  exit url: https://trustcounsel.law
+  exit label: Return to TrustCounsel.law
+
+---
+# ============================================================
+# SECTION 1: WELCOME SCREEN
+# ============================================================
+
+question: Welcome to TrustCounsel Estate Plan Intake
+subquestion: |
+  This questionnaire will gather the information needed to prepare your
+  personalized estate plan, which may include:
+
+  - A Revocable Living Trust
+  - Pour-Over Wills (one for each spouse)
+  - A Marital Property Agreement
+
+  **Time required:** approximately 15–20 minutes.
+
+  Your answers are confidential and will be reviewed by David Talley,
+  Attorney at Law, before any documents are prepared.
+
+  Press **Continue** when you are ready to begin.
+continue button field: intro_screen_seen
+
+---
+# ============================================================
+# SECTION 2: PLAN TYPE
+# ============================================================
+
+question: What type of plan are we preparing?
+fields:
+  - Plan type: plan_type
+    datatype: radio
+    choices:
+      - Married couple (joint trust): married_couple
+      - Individual (single trustor): individual
+  - Is a Marital Property Agreement needed?: include_mpa
+    datatype: yesnoradio
+    show if:
+      variable: plan_type
+      is: married_couple
+
+---
+# ============================================================
+# SECTION 3: TRUSTOR 1 — PRIMARY / HUSBAND
+# ============================================================
+
+question: Tell us about the first Trustor
+subquestion: |
+  For a married couple, this is typically the **Husband**.
+fields:
+  - First name: trustor1_first
+    hint: e.g. David
+  - Middle name: trustor1_middle
+    required: false
+    hint: e.g. Allen
+  - Last name: trustor1_last
+    hint: e.g. Talley
+  - Preferred reference in documents: trustor1_role
+    datatype: radio
+    choices:
+      - Husband: husband
+      - Spouse: spouse
+      - Trustor: trustor
+    show if:
+      variable: plan_type
+      is: married_couple
+  - Date of birth: trustor1_dob
+    datatype: date
+  - County of residence: trustor1_county
+    hint: e.g. Orange
+  - State of residence: trustor1_state
+    default: California
+
+---
+# ============================================================
+# SECTION 4: TRUSTOR 2 — SPOUSE / WIFE
+# (shown only for married couple plans)
+# ============================================================
+
+if: plan_type == 'married_couple'
+question: Tell us about the second Trustor
+subquestion: |
+  This is typically the **Wife** or second spouse.
+fields:
+  - First name: trustor2_first
+    hint: e.g. Keiko
+  - Middle name: trustor2_middle
+    required: false
+  - Last name: trustor2_last
+    hint: e.g. Talley
+  - Preferred reference in documents: trustor2_role
+    datatype: radio
+    choices:
+      - Wife: wife
+      - Spouse: spouse
+      - Trustor: trustor
+  - Date of birth: trustor2_dob
+    datatype: date
+  - Is the second Trustor a U.S. citizen?: trustor2_us_citizen
+    datatype: yesnoradio
+    help: |
+      This affects whether a Qualified Domestic Trust (QDOT) provision
+      is needed for federal estate tax purposes.
+
+---
+# ============================================================
+# SECTION 5: TRUST NAME & DATE
+# ============================================================
+
+question: Trust Identification
+subquestion: |
+  The trust name typically follows the pattern:
+  **The [YEAR] [FAMILY NAME] Living Trust**
+fields:
+  - Trust year: trust_year
+    datatype: integer
+    default: 2025
+    hint: e.g. 2025
+  - Trust family name: trust_family_name
+    hint: e.g. Talley
+  - Execution date: trust_execution_date
+    datatype: date
+    help: The date the documents will be signed.
+  - County of execution: trust_execution_county
+    default: Orange
+  - State of execution: trust_execution_state
+    default: California
+
+---
+# ============================================================
+# SECTION 6: CHILDREN
+# ============================================================
+
+question: Children of the Trustors
+subquestion: |
+  List all children of this marriage.
+  Children born or adopted after this Trust is created will be
+  automatically included by operation of the trust language.
+fields:
+  - Number of children to list: child_count
+    datatype: integer
+    min: 0
+    max: 10
+    default: 0
+
+---
+
+question: Child ${ i + 1 } Information
+fields:
+  - Full legal name: children[i].name
+  - Date of birth: children[i].dob
+    datatype: date
+  - Current address: children[i].address
+    required: false
+    hint: Street, City, State ZIP
+  - Married?: children[i].is_married
+    datatype: yesnoradio
+  - Spouse's full name: children[i].spouse_name
+    show if: children[i].is_married
+    required: false
+list collect:
+  variable: children
+  number: child_count
+  is there another: false
+
+---
+# ============================================================
+# SECTION 7: SUCCESSOR TRUSTEES
+# ============================================================
+
+question: Successor Trustee Designations
+subquestion: |
+  If both Trustors are unable to act, who should serve as Trustee?
+
+  List in order of priority (1st, 2nd, 3rd).
+fields:
+  - 1st Successor Trustee — Full name: successor1_name
+  - Relationship to Trustors: successor1_relation
+    hint: e.g. daughter, son, friend
+  - Address: successor1_address
+    required: false
+  - 2nd Successor Trustee — Full name: successor2_name
+    required: false
+  - Relationship: successor2_relation
+    required: false
+  - Address: successor2_address
+    required: false
+  - 3rd Successor Trustee — Full name: successor3_name
+    required: false
+  - Relationship: successor3_relation
+    required: false
+  - Address: successor3_address
+    required: false
+
+---
+# ============================================================
+# SECTION 8: REAL PROPERTY
+# ============================================================
+
+question: Principal Residence
+subquestion: |
+  Is there a specific residence to be addressed in the Trust?
+fields:
+  - Include a residential property provision?: include_residence
+    datatype: yesnoradio
+  - Property address: residence_address
+    show if: include_residence
+    hint: Street address
+  - City: residence_city
+    show if: include_residence
+  - State: residence_state
+    show if: include_residence
+    default: California
+  - Special beneficiaries for this property (if any): residence_special_beneficiaries
+    show if: include_residence
+    required: false
+    hint: |
+      Name(s) of anyone with a right to occupy the property after
+      the death of both Trustors. Leave blank if none.
+
+---
+# ============================================================
+# SECTION 9: DIGITAL ASSETS
+# ============================================================
+
+question: Digital Assets
+subquestion: |
+  California Probate Code §§870–884 (RUFADAA) governs fiduciary
+  access to digital assets. A Digital Assets clause in the Will
+  gives your Executor broad authority over online accounts,
+  social media, and electronically stored information.
+fields:
+  - Include Digital Assets clause in each Will?: include_digital_assets
+    datatype: yesnoradio
+    default: True
+    help: |
+      Strongly recommended. This clause authorizes your Executor
+      to access, manage, transfer, and close digital accounts
+      including banking, investment, social media, and email.
+
+---
+# ============================================================
+# SECTION 10: WITNESSES
+# ============================================================
+
+question: Witness Information
+subquestion: |
+  Each Will requires **two witnesses** present at signing.
+  If witnesses are not yet confirmed, you may leave these blank
+  and update before execution.
+fields:
+  - Witness 1 — Full name: witness1_name
+    required: false
+  - Witness 1 — Address: witness1_address
+    required: false
+  - Witness 2 — Full name: witness2_name
+    required: false
+  - Witness 2 — Address: witness2_address
+    required: false
+
+---
+# ============================================================
+# SECTION 11: NOTARY
+# ============================================================
+
+question: Notary Information
+subquestion: |
+  The Trust requires notarization. If a notary has not yet been
+  confirmed, leave these fields blank.
+fields:
+  - Notary full name: notary_name
+    required: false
+  - Notary county: notary_county
+    required: false
+    default: Orange
+  - Commission number: notary_commission_number
+    required: false
+  - Commission expiration date: notary_commission_expiry
+    datatype: date
+    required: false
+
+---
+# ============================================================
+# SECTION 12: COMPUTED FIELDS
+# (These derive display values used throughout documents)
+# ============================================================
+
+code: |
+  # Full names assembled from parts
+  trustor1_full_name = ' '.join(filter(None, [
+    trustor1_first,
+    trustor1_middle,
+    trustor1_last
+  ]))
+
+  trustor2_full_name = ' '.join(filter(None, [
+    trustor2_first,
+    trustor2_middle if defined('trustor2_middle') else '',
+    trustor2_last
+  ])) if plan_type == 'married_couple' else ''
+
+  # Trust name
+  trust_name = f"THE {trust_year} {trust_family_name.upper()} LIVING TRUST"
+
+  # QDOT flag: triggered when second trustor is not a U.S. citizen
+  qdot_required = (plan_type == 'married_couple') and (not trustor2_us_citizen)
+
+---
+# ============================================================
+# SECTION 13: REVIEW SCREEN
+# ============================================================
+
+question: Review Your Information
+subquestion: |
+  Please review the information below before submitting.
+  Use the **Back** button to make corrections.
+
+  ---
+
+  **Trust Name:** ${ trust_name }
+  **Execution Date:** ${ trust_execution_date }
+  **County / State:** ${ trust_execution_county }, ${ trust_execution_state }
+
+  ---
+
+  **Trustor 1:** ${ trustor1_full_name }
+  **Trustor 2:** ${ trustor2_full_name if plan_type == 'married_couple' else 'N/A' }
+
+  **U.S. Citizen (Trustor 2):** ${ 'Yes' if (plan_type == 'married_couple' and trustor2_us_citizen) else ('No — QDOT provisions will apply' if qdot_required else 'N/A') }
+
+  ---
+
+  **Children:** ${ child_count }
+  % for child in children:
+  - ${ child.name } (born ${ child.dob })
+  % endfor
+
+  ---
+
+  **Successor Trustees:**
+  1. ${ successor1_name } (${ successor1_relation })
+  % if successor2_name:
+  2. ${ successor2_name } (${ successor2_relation })
+  % endif
+  % if successor3_name:
+  3. ${ successor3_name } (${ successor3_relation })
+  % endif
+
+  ---
+
+  **Digital Assets Clause:** ${ 'Included' if include_digital_assets else 'Not included' }
+  **QDOT Provisions:** ${ 'Required' if qdot_required else 'Not required' }
+
+continue button field: review_complete
+continue button label: Submit to TrustCounsel
+
+---
+# ============================================================
+# SECTION 14: CONFIRMATION / EXIT
+# ============================================================
+
+event: final_screen
+question: Thank You — Intake Complete
+subquestion: |
+  Your intake information has been submitted to **TrustCounsel PC**.
+
+  David Talley will review your responses and contact you to
+  schedule your document signing appointment.
+
+  **Next steps:**
+  - You will receive a confirmation by email.
+  - Please gather any existing estate planning documents
+    (prior trusts, deeds, beneficiary designations) for your review meeting.
+
+  If you have questions in the meantime, please contact us at:
+
+  **TrustCounsel PC**
+  Rancho Santa Margarita, California
+  [trustcounsel.law](https://trustcounsel.law)
+
+buttons:
+  - Exit: exit
+    url: https://trustcounsel.law
+
+---
+# ============================================================
+# INTERVIEW ORDER — controls question flow
+# ============================================================
+
+mandatory: True
+code: |
+  intro_screen_seen
+  plan_type
+  trustor1_first
+  if plan_type == 'married_couple':
+    trustor2_first
+    trustor2_us_citizen
+  trust_year
+  child_count
+  if child_count > 0:
+    children
+  successor1_name
+  include_residence
+  include_digital_assets
+  witness1_name
+  notary_name
+  review_complete
+  final_screen
