@@ -1,0 +1,432 @@
+---
+metadata:
+  title: TrustCounsel Estate Plan Intake
+  short title: Estate Plan Intake
+  description: Intake questionnaire for a trust-based estate plan (married couple, California)
+  exit url: https://trustcounsel.law
+  exit label: Return to TrustCounsel.law
+
+---
+objects:
+  - children: DAList.using(object_type=DAObject, auto_gather=False)
+
+---
+question: Welcome to TrustCounsel Estate Plan Intake
+subquestion: |
+  This questionnaire will gather the information needed to prepare your
+  personalized estate plan, which may include a Revocable Living Trust,
+  Pour-Over Wills, and a Marital Property Agreement.
+
+  Fields marked with an asterisk (*) are required.
+  All other fields may be left blank and completed later.
+
+  Your answers are confidential and will be reviewed by David Talley,
+  Attorney at Law, before any documents are prepared.
+continue button field: intro_screen_seen
+
+---
+question: What type of plan are we preparing?
+subquestion: |
+  All fields on this screen are required.
+fields:
+  - Plan type: plan_type
+    datatype: radio
+    choices:
+      - Married couple (joint trust): married_couple
+      - Individual (single trustor): individual
+  - Is a Marital Property Agreement needed?: include_mpa
+    datatype: yesnoradio
+    show if:
+      variable: plan_type
+      is: married_couple
+
+---
+question: Tell us about the first Trustor
+subquestion: |
+  * Required &nbsp;&nbsp; Optional fields may be completed later.
+fields:
+  - First name: trustor1_first
+    required: True
+    hint: e.g. David
+  - Middle name: trustor1_middle
+    required: false
+    hint: e.g. Allen
+  - Last name: trustor1_last
+    required: True
+    hint: e.g. Talley
+  - Date of birth: trustor1_dob
+    datatype: date
+    required: True
+  - Phone: trustor1_phone
+    required: false
+    hint: e.g. 949-555-1234
+  - Email: trustor1_email
+    required: false
+    hint: e.g. david@email.com
+  - County of residence: trustor1_county
+    required: True
+    hint: e.g. Orange
+  - State of residence: trustor1_state
+    required: True
+    default: California
+
+---
+question: Document role for ${ trustor1_first }
+subquestion: |
+  How should the first Trustor be referred to in the documents?
+fields:
+  - Referred to as: trustor1_role
+    datatype: radio
+    choices:
+      - Husband: husband
+      - Spouse: spouse
+      - Trustor: trustor
+
+---
+question: Tell us about the second Trustor
+subquestion: |
+  * Required &nbsp;&nbsp; Optional fields may be completed later.
+fields:
+  - First name: trustor2_first
+    required: True
+    hint: e.g. Keiko
+  - Middle name: trustor2_middle
+    required: false
+  - Last name: trustor2_last
+    required: True
+    hint: e.g. Talley
+  - Date of birth: trustor2_dob
+    datatype: date
+    required: True
+  - Phone: trustor2_phone
+    required: false
+    hint: e.g. 949-555-5678
+  - Email: trustor2_email
+    required: false
+    hint: e.g. keiko@email.com
+  - Is the second Trustor a U.S. citizen?: trustor2_us_citizen
+    datatype: yesnoradio
+    required: True
+    help: |
+      This affects whether a Qualified Domestic Trust (QDOT) provision
+      is needed for federal estate tax marital deduction purposes.
+
+---
+question: Document role for ${ trustor2_first }
+subquestion: |
+  How should the second Trustor be referred to in the documents?
+fields:
+  - Referred to as: trustor2_role
+    datatype: radio
+    choices:
+      - Wife: wife
+      - Spouse: spouse
+      - Trustor: trustor
+
+---
+question: Trust Identification
+subquestion: |
+  * Required &nbsp;&nbsp; The signing date may be left blank if not yet scheduled.
+fields:
+  - Trust year: trust_year
+    datatype: integer
+    required: True
+    default: 2026
+    hint: e.g. 2026
+  - Trust family name: trust_family_name
+    required: True
+    hint: e.g. Talley
+  - Signing date: trust_execution_date
+    datatype: date
+    required: false
+    help: Leave blank if the signing appointment has not yet been scheduled.
+  - County of execution: trust_execution_county
+    required: True
+    default: Orange
+  - State of execution: trust_execution_state
+    required: True
+    default: California
+
+---
+question: Children of the Trustors
+subquestion: |
+  How many children will be listed in the trust?
+  Enter 0 if there are no children to list.
+
+  Children born or adopted after signing are automatically
+  included by the trust language.
+fields:
+  - Number of children: child_count
+    datatype: integer
+    required: True
+    min: 0
+    max: 10
+    default: 0
+
+---
+code: |
+  children.clear()
+  for i in range(child_count):
+    children.appendObject()
+  children.gathered = True
+
+---
+question: Information for child ${ i + 1 }
+subquestion: |
+  * Required &nbsp;&nbsp; Optional fields may be completed later.
+fields:
+  - Full legal name: children[i].name
+    required: True
+  - Date of birth: children[i].dob
+    datatype: date
+    required: True
+  - Phone: children[i].phone
+    required: false
+    hint: e.g. 949-555-0000
+  - Email: children[i].email
+    required: false
+  - Current address: children[i].address
+    required: false
+    hint: Street, City, State ZIP
+  - Married?: children[i].is_married
+    datatype: yesnoradio
+    required: True
+  - Spouse full name: children[i].spouse_name
+    show if: children[i].is_married
+    required: false
+
+---
+question: Successor Trustee Designations
+subquestion: |
+  If both Trustors are unable to act, who should serve as Trustee?
+  List in order of priority. Only the first Successor Trustee is required.
+
+  * Required &nbsp;&nbsp; Optional fields may be completed later.
+fields:
+  - 1st Successor — Full name: successor1_name
+    required: True
+  - Relationship to Trustors: successor1_relation
+    required: True
+    hint: e.g. daughter, son, friend
+  - Phone: successor1_phone
+    required: false
+  - Email: successor1_email
+    required: false
+  - Address: successor1_address
+    required: false
+  - 2nd Successor — Full name: successor2_name
+    required: false
+  - Relationship: successor2_relation
+    required: false
+  - Phone: successor2_phone
+    required: false
+  - Email: successor2_email
+    required: false
+  - Address: successor2_address
+    required: false
+  - 3rd Successor — Full name: successor3_name
+    required: false
+  - Relationship: successor3_relation
+    required: false
+  - Phone: successor3_phone
+    required: false
+  - Email: successor3_email
+    required: false
+  - Address: successor3_address
+    required: false
+
+---
+question: Principal Residence
+subquestion: |
+  Is there a specific residence to address in the Trust?
+  All sub-fields are optional if no provision is needed.
+fields:
+  - Include a residential property provision?: include_residence
+    datatype: yesnoradio
+    required: True
+  - Property street address: residence_address
+    show if: include_residence
+    required: false
+  - City: residence_city
+    show if: include_residence
+    required: false
+  - State: residence_state
+    show if: include_residence
+    required: false
+    default: California
+  - Special occupancy beneficiaries (if any): residence_special_beneficiaries
+    show if: include_residence
+    required: false
+    hint: Names of anyone with a right to occupy after both Trustors pass
+
+---
+question: Digital Assets
+subquestion: |
+  A Digital Assets clause authorizes your Executor to access and manage
+  online accounts, social media, electronic banking, and other digital
+  property under California Probate Code sections 870-884 (RUFADAA).
+
+  This is strongly recommended for all clients.
+fields:
+  - Include Digital Assets clause in each Will?: include_digital_assets
+    datatype: yesnoradio
+    required: True
+    default: True
+
+---
+question: Witness Information
+subquestion: |
+  Each Will requires two witnesses present at signing.
+  All fields are optional — leave blank if witnesses are not yet confirmed.
+fields:
+  - Witness 1 — Full name: witness1_name
+    required: false
+  - Phone: witness1_phone
+    required: false
+  - Email: witness1_email
+    required: false
+  - Address: witness1_address
+    required: false
+  - Witness 2 — Full name: witness2_name
+    required: false
+  - Phone: witness2_phone
+    required: false
+  - Email: witness2_email
+    required: false
+  - Address: witness2_address
+    required: false
+
+---
+question: Notary Information
+subquestion: |
+  All fields are optional — leave blank if a notary has not yet been confirmed.
+fields:
+  - Notary full name: notary_name
+    required: false
+  - Phone: notary_phone
+    required: false
+  - Email: notary_email
+    required: false
+  - County: notary_county
+    required: false
+    default: Orange
+  - Commission number: notary_commission_number
+    required: false
+  - Commission expiration date: notary_commission_expiry
+    datatype: date
+    required: false
+
+---
+code: |
+  trustor1_full_name = ' '.join(filter(None, [
+    trustor1_first,
+    trustor1_middle if defined('trustor1_middle') else '',
+    trustor1_last
+  ]))
+
+  if plan_type == 'married_couple':
+    trustor2_full_name = ' '.join(filter(None, [
+      trustor2_first,
+      trustor2_middle if defined('trustor2_middle') else '',
+      trustor2_last
+    ]))
+  else:
+    trustor2_full_name = ''
+
+  trust_name = 'THE ' + str(trust_year) + ' ' + trust_family_name.upper() + ' LIVING TRUST'
+
+  qdot_required = (plan_type == 'married_couple') and (not trustor2_us_citizen)
+
+---
+question: Review Your Information
+subquestion: |
+  Please review before submitting. Use **Back** to make corrections.
+
+  ---
+  **Trust Name:** ${ trust_name }
+
+  **Signing Date:** ${ trust_execution_date if defined('trust_execution_date') and trust_execution_date else 'To be confirmed' }
+
+  **County / State:** ${ trust_execution_county }, ${ trust_execution_state }
+
+  ---
+  **Trustor 1:** ${ trustor1_full_name }
+  ${ '(' + trustor1_phone + ')' if trustor1_phone else '' }
+  ${ trustor1_email if trustor1_email else '' }
+
+  % if plan_type == 'married_couple':
+  **Trustor 2:** ${ trustor2_full_name }
+  ${ '(' + trustor2_phone + ')' if trustor2_phone else '' }
+  ${ trustor2_email if trustor2_email else '' }
+
+  **Trustor 2 U.S. Citizen:** ${ 'Yes' if trustor2_us_citizen else 'No - QDOT provisions will apply' }
+  % endif
+
+  ---
+  **Children:** ${ child_count }
+
+  % for child in children:
+  - ${ child.name } (born ${ child.dob })${ ' — married to ' + child.spouse_name if child.is_married and child.spouse_name else '' }
+  % endfor
+
+  ---
+  **Successor Trustees:**
+
+  1. ${ successor1_name } (${ successor1_relation })
+  % if successor2_name:
+  2. ${ successor2_name } (${ successor2_relation })
+  % endif
+  % if successor3_name:
+  3. ${ successor3_name } (${ successor3_relation })
+  % endif
+
+  ---
+  **Digital Assets Clause:** ${ 'Included' if include_digital_assets else 'Not included' }
+
+  **QDOT Provisions:** ${ 'Required' if qdot_required else 'Not required' }
+
+  **Marital Property Agreement:** ${ 'Yes' if include_mpa else 'No' }
+
+continue button field: review_complete
+continue button label: Submit to TrustCounsel
+
+---
+event: final_screen
+question: Thank You - Intake Complete
+subquestion: |
+  Your intake information has been submitted to **TrustCounsel PC**.
+
+  David Talley will review your responses and contact you to
+  schedule your document signing appointment.
+
+  **TrustCounsel PC** | Rancho Santa Margarita, California | [trustcounsel.law](https://trustcounsel.law)
+buttons:
+  - Exit: exit
+    url: https://trustcounsel.law
+
+---
+mandatory: True
+code: |
+  intro_screen_seen
+  plan_type
+  trustor1_first
+  trustor1_dob
+  if plan_type == 'married_couple':
+    trustor1_role
+    trustor2_first
+    trustor2_us_citizen
+    trustor2_role
+  trust_year
+  child_count
+  children.gathered
+  for i in range(child_count):
+    children[i].name
+    children[i].dob
+    children[i].is_married
+  successor1_name
+  include_residence
+  include_digital_assets
+  witness1_name
+  notary_name
+  review_complete
+  final_screen
